@@ -10,7 +10,7 @@ Shows empty york university lecture halls (i.e. lecture halls when there are no 
 
 <details><summary>Required Angular Libraries</summary>
 <p>
-```npm i angular-ng-autocomplete
+``` npm i angular-ng-autocomplete
 npm i angular-material
 npm install --save kendo-ui-core
 npm install --save @progress/kendo-ui
@@ -25,7 +25,7 @@ npm i @angular/material-moment-adapter
 npm i @ng-bootstrap/ng-bootstrap
 npm i @angular/cdk
 npm i moment
-npm i hammerjs```
+npm i hammerjs ```
 
 add following in `angular.json` file under `styles` section
 ``` "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
