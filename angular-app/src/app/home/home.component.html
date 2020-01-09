@@ -1,0 +1,212 @@
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="card border-0" style="width: 16rem;">
+            <div class="card-body">
+                Search for Study Rooms
+                <!-- <span class="text-light bg-danger">Search for Study Rooms</span> -->
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="card border-0">
+            <div class="card-body">
+                <div *ngIf="this.global.mode=='date'; then date_selected else no_date"></div>
+                <ng-template #date_selected><button class="btn btn-danger">By Date</button></ng-template>
+                <ng-template #no_date><button class="btn btn-secondary" (click)="changeMode('date')">By
+                        Date</button></ng-template>
+
+            </div>
+        </div>
+        <div class="card border-0">
+            <div class="card-body">
+                <div *ngIf="this.global.mode=='location_and_date'; then loc_and_date_selected else no_loc_and_date">
+                </div>
+                <ng-template #loc_and_date_selected><button class="btn btn-danger">By Location and Date</button>
+                </ng-template>
+                <ng-template #no_loc_and_date><button class="btn btn-secondary"
+                        (click)="changeMode('location_and_date')">By
+                        Location and Date</button></ng-template>
+            </div>
+        </div>
+        <div class="card border-0">
+            <div class="card-body">
+                <div *ngIf="this.global.mode=='room'; then room_selected else no_room"></div>
+                <ng-template #room_selected><button class="btn btn-danger">Room Schedule</button>
+                </ng-template>
+                <ng-template #no_room><button class="btn btn-secondary" (click)="changeMode('room')">Room
+                        Schedule</button></ng-template>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+
+        <div *ngIf="this.global.mode == 'date'">
+            <div class="card" style="width: 45rem;">
+                <div class="card-body ">
+                    <div align="center">
+                        <h5><span class="">Date</span></h5>
+                        <br>
+                        <mat-form-field color="warn">
+                            <input matInput [matDatepicker]="picker" placeholder="Choose a date"
+                                (dateChange)="dateChanged($event)" [value]="this.global.selected_date">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<button class="btn-sm btn-danger"
+                            (click)="setTodayDate()">Today</button>
+                        <div *ngIf="display_date_error" class="alert alert-danger alert-dismissible" role="alert">
+                            Please select a date!
+                            <button (click)="this.display_date_error = false" type="button" class="close"
+                                data-dismiss="alert">&times;</button>
+                        </div>
+                        <br><br>
+                        <div class="example-wrapper">
+                            <p>Select Time Range</p><br>
+                            Start Time: <kendo-timepicker [steps]="{ hour: 1, minute: 15}"
+                                [(value)]="this.global.start_time">
+                            </kendo-timepicker>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;End Time: <kendo-timepicker
+                                [steps]="{ hour: 1, minute: 15}" [(value)]="this.global.end_time"></kendo-timepicker>
+                        </div>
+                        <br>
+                        <div *ngIf="display_time_error"
+                            class="alert alert-danger alert-dismissible" role="alert">
+                            Start time cannot come after end time!
+                            <button (click)="this.display_time_error = false" type="button" class="close"
+                                data-dismiss="alert">&times;</button>
+                        </div>
+                        <br>
+                        <button class="btn btn-danger" (click)="searchClicked()">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="this.global.mode == 'location_and_date'">
+            <div class="card" style="width: 45rem;">
+                <div class="card-body ">
+                    <div align="center">
+                        <h5><span class="">Location and Date</span></h5>
+                        <br>
+                        <div class="row justify-content-center">
+
+                            <ng-autocomplete [data]="data" [searchKeyword]="keyword" (selected)='selectEvent($event)'
+                                [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"
+                                (inputCleared)="buildingCleared()" placeHolder="Select a building" #auto>
+                            </ng-autocomplete>
+
+                            <ng-template #itemTemplate let-item>
+                                <a [innerHTML]="item.name"></a>
+                            </ng-template>
+
+                            <ng-template #notFoundTemplate let-notFound>
+                                <div [innerHTML]="notFound"></div>
+                            </ng-template>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn-sm btn-danger dropdown-toggle"
+                                (click)="openPanel($event)"></button>
+                        </div>
+                        <br>
+                        <div *ngIf="display_building_error" class="alert alert-danger alert-dismissible" role="alert">
+                            Please select a building!
+                            <button (click)="this.display_building_error = false" type="button" class="close"
+                                data-dismiss="alert">&times;</button>
+                        </div>
+                        <br>
+                        <mat-form-field color="warn">
+                            <input matInput [matDatepicker]="picker" placeholder="Choose a date"
+                                (dateChange)="dateChanged($event)" [value]="this.global.selected_date">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<button class="btn-sm btn-danger"
+                            (click)="setTodayDate()">Today</button>
+                        <div *ngIf="display_date_error" class="alert alert-danger alert-dismissible" role="alert">
+                            Please select a date!
+                            <button (click)="this.display_date_error = false" type="button" class="close"
+                                data-dismiss="alert">&times;</button>
+                        </div>
+                        <br><br>
+                        <div class="example-wrapper">
+                            <p>Select Time Range</p><br>
+                            Start Time: <kendo-timepicker [steps]="{ hour: 1, minute: 15}"
+                                [(value)]="this.global.start_time">
+                            </kendo-timepicker>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;End Time: <kendo-timepicker
+                                [steps]="{ hour: 1, minute: 15}" [(value)]="this.global.end_time"></kendo-timepicker>
+                        </div>
+                        <br>
+                        <div *ngIf="display_time_error "
+                            class="alert alert-danger alert-dismissible" role="alert">
+                            Start time cannot come after end time!
+                            <button (click)="this.display_time_error = false" type="button" class="close"
+                                data-dismiss="alert">&times;</button>
+                        </div>
+
+                        <br>
+                        <button class="btn btn-danger" (click)="searchClicked()">Search</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="this.global.mode == 'room'">
+            <div class="card" style="width: 45rem;">
+                <div class="card-body ">
+                    <div align="center">
+                        <h5><span class="">See Schedule of a Room</span></h5>
+                        <br>
+                        <div class="row justify-content-center">
+
+                            <ng-autocomplete [data]="data" [searchKeyword]="keyword" (selected)='selectEvent($event)'
+                                [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"
+                                (inputCleared)="buildingCleared()" placeHolder="Select a building" #auto>
+                            </ng-autocomplete>
+
+                            <ng-template #itemTemplate let-item>
+                                <a [innerHTML]="item.name"></a>
+                            </ng-template>
+
+                            <ng-template #notFoundTemplate let-notFound>
+                                <div [innerHTML]="notFound"></div>
+                            </ng-template>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn-sm btn-danger dropdown-toggle"
+                                (click)="openPanel($event)"></button>
+                        </div>
+                        <br>
+                        <div *ngIf="display_building_error" class="alert alert-danger alert-dismissible" role="alert">
+                            Please select a building!
+                            <button (click)="this.display_building_error = false" type="button" class="close"
+                                data-dismiss="alert">&times;</button>
+                        </div>
+                        <br>
+                        <div *ngIf="this.building_acr">
+                            <div class="row justify-content-center">
+                                <ng-autocomplete [data]="this.building_rooms" [searchKeyword]="keyword"
+                                    (selected)='selectRoom($event)' [itemTemplate]="itemTemplate" (inputCleared)="roomCleared()"
+                                    [notFoundTemplate]="notFoundTemplate" placeHolder="Select room" #roomSelect>
+                                </ng-autocomplete>
+
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" class="btn-sm btn-danger dropdown-toggle"
+                                    (click)="openRoomPanel($event)"></button>
+                            </div>
+                            <br>
+                            <div *ngIf="display_room_error" class="alert alert-danger alert-dismissible" role="alert">
+                                Please select a room!
+                                <button (click)="this.display_room_error = false" type="button" class="close"
+                                    data-dismiss="alert">&times;</button>
+                            </div>
+                        </div>
+
+                        <br>
+                        <button class="btn btn-danger" (click)="searchClicked()">Search</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
