@@ -8,6 +8,8 @@ Shows empty york university lecture halls (i.e. lecture halls when there are no 
 * `angular-app/` front end angular web application<br>
 * `dump.rdb` redis database snapshot (database data populated by `processor.py`)<br>
 
+WebApp deployed on Heroku: (https://gentle-forest-62456.herokuapp.com/)
+
 <details><summary>Required Angular Libraries</summary>
 <p>
  
