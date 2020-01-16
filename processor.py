@@ -32,6 +32,17 @@ def remove_filled_slots():
     for key in r.keys():
         r.zremrangebyscore(key, 1, 1) #removes all elements with scores = 1 in key key
 
+def add_days_room():
+    for key in r.keys():
+        room = key.rsplit('_', 1)[0]
+        if(not r.exists(room + "_" + "MODAY")): init_key(room + "_" + "MODAY")
+        if(not r.exists(room + "_" + "TUDAY")): init_key(room + "_" + "TUDAY")
+        if(not r.exists(room + "_" + "WEDAY")): init_key(room + "_" + "WEDAY")
+        if(not r.exists(room + "_" + "THDAY")): init_key(room + "_" + "THDAY")
+        if(not r.exists(room + "_" + "FRDAY")): init_key(room + "_" + "FRDAY")
+
+
+
 # adds empty intervals to key in database (i.e 0800-0830, 0830-0900, ... 2130-2200 with value 0) 
 def init_key(key):
     r.zadd(key, {"0800-0830": 0})
@@ -44,6 +55,8 @@ def init_key(key):
         block = str(i) + "30"  + "-" + str(i + 1) + "00"
         r.zadd(key, {block: 0})
 
+
+#main code
 year = "2019" # year to get schedule of
 term = "_W_" #replace with either "_F_", "_W_" or "_SU_" for fall, winter and summer semester. Do not remove enclosing underscores (_). Note: S1, S2 and SU courses are treated as full SU courses
 ical_home_link = "http://ical.uit.yorku.ca/"
@@ -120,3 +133,5 @@ for link in soup_main.find_all('a', href=True): # get all links in ical_home_lin
 
 print("removing filled spots")
 remove_filled_slots()
+print("Adding rooms for other days if any")
+add_days_room()

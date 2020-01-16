@@ -99,10 +99,13 @@ app.use('/getRooms', function (req, res) {
     let acr_room = req.query.acr_room
 
     let intervals = getIntervals(start_time, end_time)
+    // if(!intervals) console.log("in")
 
     let keys_regex = "*_" + day
-    if (building_acr != "null") keys_regex = building_acr + "_*_" + day
-    if (acr_room != "null") keys_regex = acr_room + "_*"
+
+
+    if (building_acr && building_acr != "undefined" && building_acr != "null") keys_regex = building_acr + "_*_" + day
+    if (acr_room && acr_room != "undefined" && acr_room != "null") keys_regex = acr_room + "_*"
     getRooms(keys_regex, intervals, function(err, data){
         if(err) throw err
         res.json(data)
@@ -114,7 +117,6 @@ function getRoomSchedule(room_key, callback){
     let room_schedule_json = {}
     redis_client.keys(room_key + "*",  function (err, days) {
         if (err) throw err
-        console.log(days)
         async.forEach(days, function (day, inner_callback) {
             redis_client.zrange(day, 0, -1, function (err, data) {
                 if (err) throw err
@@ -133,8 +135,6 @@ app.use('/getRoomSchedule', function (req, res) {
     res.set("Access-Control-Allow-Credentials", true);
 
     let room_key = req.query.room_key
-    console.log(room_key)
-
     getRoomSchedule(room_key, function(err, data){
         if(err) throw err
         res.json(data)
@@ -145,11 +145,11 @@ app.use('/getRoomSchedule', function (req, res) {
 function getBuildingRooms(building_acr, callback){
     redis_client.keys(building_acr + "_*",  function (err, rooms) {
         if (err) throw err
-        building_rooms = new Array()
+        building_rooms = new Set()
         rooms.forEach(function(key){
-            building_rooms.push(key.split("_")[1])
+            building_rooms.add(key.split("_")[1])
         })
-        callback(null, building_rooms)
+        callback(null, Array.from(building_rooms))
     })
 }
 

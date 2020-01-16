@@ -1,0 +1,61 @@
+<div align="center">
+    <br><br>
+    <div class="card" style="border: 0; background-color:rgba(255, 255, 255, 0.911); width: 75%;">
+        <!-- <div class="card-body"> -->
+        <strong *ngIf="this.rooms && this.start_time">
+            <!-- <div align="center">
+                            <div align="center" class="card" style="max-width: 10rem;">
+                                <div class="card-header card-text bg-danger text-white">Total Rooms</div>
+                                <div class="card-body text-success">{{this.rooms.length}}</div>
+                            </div>
+                        </div> -->
+            <br>{{this.rooms.length}} Available Rooms from<br>
+            {{this.start_time.substring(0,2)}}:{{this.start_time.substring(2,4)}} -
+            {{this.end_time.substring(0,2)}}:{{this.end_time.substring(2,4)}} on
+            {{this.day_name}} <br><br>
+            <!-- <input type="text" name="searchString"
+                            class="form-control" placeholder="Filter rooms" [(ngModel)]="searchString" /> -->
+        </strong>
+        <div class="table-wrapper">
+            <table class="table table-bordered table-hover table-responsive" style="max-height: 650px;">
+                <!-- <thead>
+                    <tr>
+                        <th scope="col">
+                            
+                        </th>
+                    </tr>
+                </thead> -->
+                <tbody>
+                    <tr *ngFor="let building_json of this.building_to_rooms">
+                        <td style="min-width: 150px;">{{building_json.bldName}}</td>
+                        <td *ngFor="let room of building_json.rooms">
+                            <button (click)="displaySchedule(room)" class="btn btn-danger text-white">{{room}}</button>
+                        </td>
+                    </tr>
+                </tbody>
+                <!-- <tr>
+                    <div class="inner-table-wrapper">
+                        <td *ngFor="let building_json of this.building_to_rooms">
+
+                            <table class="table table-bordered" style="max-height: 650px;">
+                                <thead>
+                                    <tr>
+                                        <td style="min-width: 100px;">{{building_json.bldName}}</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let room of building_json.rooms">
+                                        <td><button (click)="displaySchedule(room)"
+                                                class="btn btn-danger text-white">{{room}}</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </td>
+                    </div>
+                </tr> -->
+
+            </table>
+        </div>
+    </div>
+</div>

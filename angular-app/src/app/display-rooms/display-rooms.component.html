@@ -2,13 +2,13 @@
 
 <div *ngIf="!this.acr_room" class="row">
     <div class="col-3">
-        <div class="card" style="border: 0;">
+        <div class="card" style="border: 0; background-color:rgba(255, 255, 255, 0.911);">
             <!-- <div class="card-body"> -->
             <div class="table-wrapper">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">
+                            <td scope="col">
                                 <p *ngIf="this.rooms && this.start_time">
                                     <!-- <div align="center">
                                         <div align="center" class="card" style="max-width: 10rem;">
@@ -16,19 +16,44 @@
                                             <div class="card-body text-success">{{this.rooms.length}}</div>
                                         </div>
                                     </div> -->
-                                    <br>{{this.rooms.length}} Available Rooms from
-                                    {{this.start_time.substring(0,2)}}:{{this.start_time.substring(2,4)}} -
-                                    {{this.end_time.substring(0,2)}}:{{this.end_time.substring(2,4)}}<br>on
-                                    {{this.day_name}} <br><br><input type="text" name="searchString"
-                                        class="form-control" placeholder="Filter rooms" [(ngModel)]="searchString" />
+                                    <br><strong>{{this.rooms.length}} Available Rooms from
+                                        {{this.start_time.substring(0,2)}}:{{this.start_time.substring(2,4)}} -
+                                        {{this.end_time.substring(0,2)}}:{{this.end_time.substring(2,4)}}<br>on
+                                        {{this.day_name}}</strong><br><br>
+                                    <!-- <input list="buildings" type="text" name="searchString" class="form-control"
+                                        placeholder="Filter rooms" [(ngModel)]="searchString" /> -->
+
+                                    <ng-autocomplete [data]="this.filter_options" [searchKeyword]="keyword"
+                                        (selected)='selectEvent($event)' [itemTemplate]="itemTemplate"
+                                        [notFoundTemplate]="notFoundTemplate" (inputCleared)="buildingCleared()"
+                                        placeHolder="Filter by building" #auto>
+                                    </ng-autocomplete>
+
+                                    <ng-template #itemTemplate let-item>
+                                        <a [innerHTML]="item.name"></a>
+                                    </ng-template>
+
+                                    <ng-template #notFoundTemplate let-notFound>
+                                        <div [innerHTML]="notFound"></div>
+                                    </ng-template>
+
+                                    <br>
+
+
+                                    <ng-autocomplete *ngIf="show_room_filter" [data]="this.room_filter_options"
+                                        [searchKeyword]="keyword" (selected)='selectRoom($event)'
+                                        [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"
+                                        (inputCleared)="roomCleared()" placeHolder="Filter by room" #roomSelect>
+                                    </ng-autocomplete>
+
                                 </p>
-                            </th>
+                            </td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let room of rooms | filter : 'name' : searchString;">
                             <td align="center"><button class="btn btn-danger"
-                                    (click)="displaySchedule(room.substring(0, room.lastIndexOf('_')))">{{room.substring(0, room.lastIndexOf('_'))}}</button>
+                                    (click)="displaySchedule(room.split(' ')[0] + '_' + room.split(' ')[1])">{{room}}</button>
                             </td>
                         </tr>
                     </tbody>
@@ -38,67 +63,101 @@
         </div>
     </div>
     <div class="col-8">
-        <div class="card"> <br>
+        <div class="card" style="background-color:rgba(255, 255, 255, 0.911);"> <br>
             <div align="center">
-                <h5>Schedule for {{this.room_name}}</h5>
+                <h5>Schedule for {{this.room_name}} ({{this.building_name}})</h5>
             </div>
             <div class="card-body">
                 <div>
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="text-secondary">Time</th>
-                                <th scope="col" class="bg-danger text-white">Monday</th>
-                                <th scope="col" class="bg-danger text-white">Tuesday</th>
-                                <th scope="col" class="bg-danger text-white">Wednesday</th>
-                                <th scope="col" class="bg-danger text-white">Thursday</th>
-                                <th scope="col" class="bg-danger text-white">Friday</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let interval of this.intervals;">
-                                <!-- interval look like 0800-0830, pretty print them -->
-                                <td>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} -
-                                    {{interval.substring(5,7)}}:{{interval.substring(7,9)}}</td>
+                    <table id="header-table" class="table table-bordered table-hover">
 
-                                <!-- monday cells -->
-                                <td *ngIf="this.moday_colored_intervals && this.moday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td
-                                    *ngIf="this.moday_colored_intervals && !this.moday_colored_intervals.includes(interval)">
-                                </td>
+                        <tr>
+                            <th scope="col" class="text-dark">Time</th>
+                            <th scope="col" class="bg-danger text-white">Monday</th>
+                            <th scope="col" class="bg-danger text-white">Tuesday</th>
+                            <th scope="col" class="bg-danger text-white">Wednesday</th>
+                            <th scope="col" class="bg-danger text-white">Thursday</th>
+                            <th scope="col" class="bg-danger text-white">Friday</th>
+                        </tr>
 
-                                <!-- tuesday cells-->
-                                <td *ngIf="this.tuday_colored_intervals && this.tuday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td
-                                    *ngIf="this.tuday_colored_intervals && !this.tuday_colored_intervals.includes(interval)">
-                                </td>
-
-                                <!-- wednesday cells -->
-                                <td *ngIf="this.weday_colored_intervals && this.weday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td
-                                    *ngIf="this.weday_colored_intervals && !this.weday_colored_intervals.includes(interval)">
-                                </td>
-
-                                <!-- thursday cells -->
-                                <td *ngIf="this.thday_colored_intervals && this.thday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td
-                                    *ngIf="this.thday_colored_intervals && !this.thday_colored_intervals.includes(interval)">
-                                </td>
-
-                                <!-- friday cells -->
-                                <td *ngIf="this.frday_colored_intervals && this.frday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td
-                                    *ngIf="this.frday_colored_intervals && !this.frday_colored_intervals.includes(interval)">
-                                </td>
-
-                            </tr>
-                        </tbody>
                     </table>
+                    <div id="inner-table-wrapper">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr *ngFor="let interval of this.intervals;">
+                                    <!-- interval look like 0800-0830, pretty print them -->
+                                    <td>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} -
+                                        {{interval.substring(5,7)}}:{{interval.substring(7,9)}}</td>
+
+                                    <td *ngIf="this.moday_colored_intervals && this.moday_colored_intervals.includes(interval) && this.moday_continuous_intervals && this.moday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.moday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.moday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.moday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.moday_colored_intervals && !this.moday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                    <!-- tuesday cells-->
+                                    <td *ngIf="this.tuday_colored_intervals && this.tuday_colored_intervals.includes(interval) && this.tuday_continuous_intervals && this.tuday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.tuday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.tuday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.tuday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.tuday_colored_intervals && !this.tuday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                    <!-- wednesday cells -->
+                                    <td *ngIf="this.weday_colored_intervals && this.weday_colored_intervals.includes(interval) && this.weday_continuous_intervals && this.weday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.weday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.weday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.weday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.weday_colored_intervals && !this.weday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                    <!-- thursday cells -->
+                                    <td *ngIf="this.thday_colored_intervals && this.thday_colored_intervals.includes(interval) && this.thday_continuous_intervals && this.thday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.thday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.thday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.thday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.thday_colored_intervals && !this.thday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                    <!-- friday cells -->
+                                    <td *ngIf="this.frday_colored_intervals && this.frday_colored_intervals.includes(interval) && this.frday_continuous_intervals && this.frday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.frday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.frday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.frday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.frday_colored_intervals && !this.frday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -109,60 +168,98 @@
     <div class="justify-content-center" style="width: 80%;">
         <div class="card"> <br>
             <div align="center">
-                <h5>Schedule for {{this.room_name}}</h5>
+                <h5>Full Schedule for {{this.room_name}} ({{this.building_name}})</h5>
             </div>
             <div class="card-body">
                 <div>
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="text-secondary">Time</th>
-                                <th scope="col" class="bg-danger text-white">Monday</th>
-                                <th scope="col" class="bg-danger text-white">Tuesday</th>
-                                <th scope="col" class="bg-danger text-white">Wednesday</th>
-                                <th scope="col" class="bg-danger text-white">Thursday</th>
-                                <th scope="col" class="bg-danger text-white">Friday</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let interval of this.intervals;">
-                                <!-- interval look like 0800-0830, pretty print them -->
-                                <td>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} -
-                                    {{interval.substring(5,7)}}:{{interval.substring(7,9)}}</td>
+                    <table id="header-table" class="table table-bordered table-hover">
 
-                                <!-- monday cells -->
-                                <td *ngIf="this.moday_colored_intervals && this.moday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td *ngIf="this.moday_colored_intervals && !this.moday_colored_intervals.includes(interval)">
-                                </td>
+                        <tr>
+                            <th scope="col" class="text-dark">Time</th>
+                            <th scope="col" class="bg-danger text-white">Monday</th>
+                            <th scope="col" class="bg-danger text-white">Tuesday</th>
+                            <th scope="col" class="bg-danger text-white">Wednesday</th>
+                            <th scope="col" class="bg-danger text-white">Thursday</th>
+                            <th scope="col" class="bg-danger text-white">Friday</th>
+                        </tr>
 
-                                <!-- tuesday cells-->
-                                <td *ngIf="this.tuday_colored_intervals && this.tuday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td *ngIf="this.tuday_colored_intervals && !this.tuday_colored_intervals.includes(interval)">
-                                </td>
-
-                                <!-- wednesday cells -->
-                                <td *ngIf="this.weday_colored_intervals && this.weday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td *ngIf="this.weday_colored_intervals && !this.weday_colored_intervals.includes(interval)">
-                                </td>
-
-                                <!-- thursday cells -->
-                                <td *ngIf="this.thday_colored_intervals && this.thday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td *ngIf="this.thday_colored_intervals && !this.thday_colored_intervals.includes(interval)">
-                                </td>
-
-                                <!-- friday cells -->
-                                <td *ngIf="this.frday_colored_intervals && this.frday_colored_intervals.includes(interval)"
-                                    class="bg-success"></td>
-                                <td *ngIf="this.frday_colored_intervals && !this.frday_colored_intervals.includes(interval)">
-                                </td>
-
-                            </tr>
-                        </tbody>
                     </table>
+                    <div id="inner-table-wrapper">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr *ngFor="let interval of this.intervals;">
+                                    <!-- interval look like 0800-0830, pretty print them -->
+                                    <td>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} -
+                                        {{interval.substring(5,7)}}:{{interval.substring(7,9)}}</td>
+                                    <td *ngIf="this.moday_colored_intervals && this.moday_colored_intervals.includes(interval) && this.moday_continuous_intervals && this.moday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.moday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.moday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.moday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.moday_colored_intervals && !this.moday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                    <!-- tuesday cells-->
+                                    <td *ngIf="this.tuday_colored_intervals && this.tuday_colored_intervals.includes(interval) && this.tuday_continuous_intervals && this.tuday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.tuday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.tuday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.tuday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.tuday_colored_intervals && !this.tuday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                    <!-- wednesday cells -->
+                                    <td *ngIf="this.weday_colored_intervals && this.weday_colored_intervals.includes(interval) && this.weday_continuous_intervals && this.weday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.weday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.weday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.weday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.weday_colored_intervals && !this.weday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                    <!-- thursday cells -->
+                                    <td *ngIf="this.thday_colored_intervals && this.thday_colored_intervals.includes(interval) && this.thday_continuous_intervals && this.thday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.thday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.thday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.thday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.thday_colored_intervals && !this.thday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                    <!-- friday cells -->
+                                    <td *ngIf="this.frday_colored_intervals && this.frday_colored_intervals.includes(interval) && this.frday_continuous_intervals && this.frday_continuous_intervals.hasOwnProperty(interval.substring(0,4))"
+                                        [attr.rowspan]="this.frday_continuous_intervals[interval.substring(0,4)].split('_')[1]"
+                                        class="bg-success text-white"
+                                        style="vertical-align : middle;text-align:center;">
+                                        <p>Available from<br>{{interval.substring(0,2)}}:{{interval.substring(2,4)}} to
+                                            {{this.frday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(0,2)}}:{{this.frday_continuous_intervals[interval.substring(0,4)].split('_')[0].substring(2,4)}}
+                                        </p>
+                                    </td>
+                                    <td *ngIf="this.frday_colored_intervals && !this.frday_colored_intervals.includes(interval)"
+                                        class="bg-secondary">
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>

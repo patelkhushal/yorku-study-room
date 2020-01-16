@@ -1,0 +1,13 @@
+table{
+    overflow: auto;
+    width: 90%;
+}
+
+tr td button{
+    min-width: 101px;
+}
+
+.inner-table-wrapper{
+    max-height:700px;
+    overflow:auto; 
+  }

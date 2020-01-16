@@ -4,18 +4,20 @@ td, th {
     text-align: center;
 }
 
-  /* .table-wrapper {
-    overflow: auto;
-    height:700px;
-  } */
-
   .table-wrapper tbody {
     display:block;
-    max-height:650px;
+    max-height:575px;
     overflow:auto; 
   }
 
-tbody {
+  .table-wrapper tbody tr{
+    display:table;
+    width:100%;
+    table-layout:fixed;
+  }
+
+
+/* tbody {
     display:block;
     max-height:700px;
     overflow:auto;
@@ -24,7 +26,27 @@ thead, tbody tr {
     display:table;
     width:100%;
     table-layout:fixed;
-}
+} */
+
+
+  #header-table{
+    margin-bottom: 0rem;
+  }
+
+  #inner-table-wrapper{
+    max-height:728px;
+    overflow:auto; 
+  }
+
+  #inner-table-wrapper td,th{
+    max-width:20px;
+  }
+
+  /* #header-table thead{
+    display:table;
+    width:100%;
+    table-layout:fixed;
+  } */
 
   /* tr.row1 td {
     border: 0;

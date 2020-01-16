@@ -21,12 +21,14 @@ import 'hammerjs';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { DisplayRoomsComponent } from './display-rooms/display-rooms.component';
+import { DisplayRoomButtonsComponent } from './display-room-buttons/display-room-buttons.component';
 
 const urlMap: Routes =
   [
     { path: '', redirectTo: '/home', pathMatch: "full" },
     { path: 'home', component: HomeComponent },
     { path: 'display-rooms', component: DisplayRoomsComponent },
+    { path: 'display-room-buttons', component: DisplayRoomButtonsComponent },
   ];
 
 // See the Moment.js docs for the meaning of these formats:
@@ -48,7 +50,8 @@ export const MY_FORMATS = {
     AppComponent,
     HomeComponent,
     DisplayRoomsComponent,
-    FilterPipe
+    FilterPipe,
+    DisplayRoomButtonsComponent
   ],
   imports: [
     BrowserModule,
