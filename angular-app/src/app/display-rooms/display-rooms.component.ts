@@ -66,7 +66,8 @@ export class DisplayRoomsComponent implements OnInit {
 
       if (this.global.requested_rooms) {
         this.rooms = this.global.requested_rooms
-        this.configureRooms()
+        if(this.rooms[0].includes("_")) this.configureRooms()
+        else this.displaySchedule(this.rooms[0].replace(" ", "_"))
       }
       else {
         let url = this.global.port + "/getRooms" + "?start_time=" + this.start_time + "&end_time=" + this.end_time + "&day=" + this.day + "&building_acr=" + this.building_acr + "&acr_room=" + this.acr_room

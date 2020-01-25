@@ -6,7 +6,7 @@ td, th {
 
   .table-wrapper tbody {
     display:block;
-    max-height:575px;
+    max-height:68vh;
     overflow:auto; 
   }
 
@@ -34,7 +34,7 @@ thead, tbody tr {
   }
 
   #inner-table-wrapper{
-    max-height:728px;
+    max-height:77vh;
     overflow:auto; 
   }
 
