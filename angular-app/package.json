@@ -34,7 +34,7 @@
     "angular-ng-autocomplete": "^1.1.15",
     "hammerjs": "^2.0.8",
     "kendo-ui-core": "^2019.3.1113",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "promise-polyfill": "8.1.3",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
